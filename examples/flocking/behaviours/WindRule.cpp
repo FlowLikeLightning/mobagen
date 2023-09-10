@@ -6,7 +6,14 @@
 
 Vector2f WindRule::computeForce(const std::vector<Boid*>& neighborhood, Boid* boid) {
   // todo: add a wind force here
+  float windForce = 1;
   // hint: use the windAngle variable
+  for (int i = 0; i < neighborhood.size(); ++i) {
+    neighborhood[i]->applyForce(Vector2f(windForce,windAngle));
+
+
+  }
+
   return Vector2f::zero();
 }
 
