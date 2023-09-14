@@ -30,5 +30,5 @@ Vector2f CohesionRule::computeForce(const std::vector<Boid*>& neighborhood, Boid
 
 
 
-  return cohesionForce;
+  return cohesionForce.normalized();
 }

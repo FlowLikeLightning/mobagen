@@ -23,12 +23,16 @@ Vector2f SeparationRule::computeForce(const std::vector<Boid*>& neighborhood, Bo
       if (diff.getMagnitude()<=desiredDistance)
       {
         countCloseFlockmates++;
+        diff.normalized();
         separatingForce+=(Vector2f(1,1)/diff)/diff.getMagnitude();
         separatingForce = Vector2f::normalized(separatingForce);
+        separatingForce/(diff.getMagnitude()/desiredDistance);
         boid->applyForce(separatingForce);
+        neighborhood[i]->applyForce(separatingForce);
       }
 
     }
+
     //separatingForce = Vector2f::normalized(separatingForce);
 
 
