@@ -1,4 +1,4 @@
-#ifndef MOBAGEN_NODE_H
+ #ifndef MOBAGEN_NODE_H
 #define MOBAGEN_NODE_H
 #include <iostream>
 #include <vector>
