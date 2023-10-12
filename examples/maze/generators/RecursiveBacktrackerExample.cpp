@@ -6,42 +6,77 @@
 using namespace std;
 struct WallInfo{
   bool top, right, bottom, left;
-
 };
+void raptureWall(World* w, Point2D beginning, Point2D objective)
+{
 
-bool RecursiveBacktrackerExample::Step(World* w) {
-  if (stack.empty() && randomStartPoint(w) == Point2D(INT_MAX, INT_MAX)) {
-    return false;
+  auto sideOver2 = w->GetSize() / 2;
+  auto diff = objective - beginning;
+  if (diff.y <=-1&& objective.y >= -sideOver2)
+  {
+    w->SetNorth(objective.Down(), false);
+
   }
+  if(diff.y>=1 && objective.y <= sideOver2)
+  {
+    w->SetSouth(objective.Up(), false);
+
+  }
+  if(diff.x>=1 && objective.x <= sideOver2)
+  {
+    w->SetEast(objective.Left(), false);
+  }
+  if (diff.x<=-1&& objective.x>=-sideOver2)
+  {
+    w->SetWest(objective.Right(),false);
+  }
+
+}
+bool RecursiveBacktrackerExample::Step(World* w) {
+  auto randomStart = randomStartPoint(w);
+  // bootstrap for stopping
+  if (stack.empty() && randomStart == Point2D(INT_MAX, INT_MAX))
+    return false;
+
+  // bootstrap for starting
   if (stack.empty()) {
-    stack.push_back(randomStartPoint(w));
+    stack.push_back(randomStart);
     return true;
   }
+
   Point2D current(stack.back());
+  visited[current.x][current.y] = true;
+  w->SetNodeColor(current,Color::Red);
 
   auto homies = getVisitables(w, current);
   if (homies.empty())  // visited
   {
-    //breakwall?
+    w->SetNodeColor(current,Color::Black);
+    stack.pop_back();
+    return true;
   }
   if (homies.size() == 1)  // no random
   {
     Point2D cPoint = homies.back();
-    visited[cPoint.x][cPoint.y];
+    w->SetNodeColor(cPoint,Color::Green);
+
+    stack.push_back(cPoint);
+    raptureWall(w,current,cPoint);
+
+    visited[cPoint.x][cPoint.y] = true;
   }
-  if (homies.size() > 1)  // random
+  if (homies.size() > 1)  // random aka the problem
   {
-    int randomChoice = Random::Range(0, homies.size() - 1);
+    int randomChoice = Random::Range(0, homies.size()-1);
     Point2D rcPoint = homies[randomChoice];
-    visited[rcPoint.x][rcPoint.y];
+    w->SetNodeColor(rcPoint,Color::Green);
+    raptureWall(w,current,rcPoint);
 
-
-
+    visited[rcPoint.x][rcPoint.y] = true;
+    stack.push_back(rcPoint);
   }
-
+  return true;
 }
-
-
 
 void RecursiveBacktrackerExample::Clear(World* world) {
   visited.clear();
@@ -68,31 +103,14 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
   auto sideOver2 = w->GetSize() / 2;
 
   std::vector<Point2D> visitables;
-  if (p.y>-sideOver2&&visited[p.x][p.y-1])
-  {
+  if (p.y>-sideOver2&&!visited[p.x][p.y-1])
     visitables.push_back(p.Up());
-
-  }
-
-  if (p.y<sideOver2&&visited[p.x][p.y+1])
-  {
+  if (p.y<sideOver2&&!visited[p.x][p.y+1])
     visitables.push_back(p.Down());
-
-  }
-  if (p.x>sideOver2&&visited[p.x+1][p.y])
-  {
+  if (p.x<sideOver2&&!visited[p.x+1][p.y])
     visitables.push_back(p.Right());
-
-  }
-  if (p.x>sideOver2&&visited[p.x-1][p.y])
-  {
+  if (p.x>-sideOver2&&!visited[p.x-1][p.y])
     visitables.push_back(p.Left());
-    
-
-  }
-
-
-
 
   return visitables;
 }
